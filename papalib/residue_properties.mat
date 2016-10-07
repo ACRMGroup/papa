@@ -1,0 +1,31 @@
+# Matrix for the amino acids. This is a 20 X 5 matrix.
+# The first column gives the one letter code for the amino acid.
+# The 20 rows represent the Amino acids while the four columns represent:
+#
+# 1. Size of amino acid - Number of atoms in side chain
+# 2. Size of amino acid - Shortest path traceable from CA to the atom farthest away from it.
+# 3. Hydrophobicity.
+# 4. Charge.
+#
+
+A	1	1	0.250	0
+V	3	2	0.540	0
+L	4	3	0.530	0
+I	4	3	0.730	0
+P	3	4	-0.07	0
+M	4	4	0.26	0
+F	7	5	0.610	0
+W	10	6	0.370	0
+G	0	0	0.160	0
+S	2	2	-0.26	0
+T	3	2	-0.18	0
+C	2	2	0.04	0
+N	4	3	-0.64	0
+Q	5	4	-0.69	0
+Y	8	6	0.02	0
+D	4	3	-0.72	-1
+E	5	4	-0.62	-1
+K	5	5	-1.1	1
+R	7	6	-1.8	1
+H	6	4	-0.4	0.5
+-	0	0	0	0
