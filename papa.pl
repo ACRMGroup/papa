@@ -105,14 +105,14 @@ sub RunPrediction
     my %numberingHash      = ();
     my $packingAngle       = -1;
 
+    # Read the numbered sequence file
+    ReadNumberingFile($numberingFile, \%numberingHash);
+
     # Read the list of critical positions.
     ReadCriticalPositions($criticalPositionsFile, \@criticalPositions);
 
     # Read encoding for the amino acids.
     ReadAminoAcidEncoding($aminoAcidsFile, \%aminoAcidsEncoding);
-
-    # Read the numbering file.
-    ReadNumberingFile($numberingFile, \%numberingHash);
 
     # Write the encoding to a pattern file.
     WritePatternEncodingFile($inputPatternsFile,
@@ -235,7 +235,7 @@ sub ReadNumberingFile
            ($position, $residue) = split(/\s+/, $line);
 
            # Store residue type by position
-           $$hNumberingHash{$position} = $residue;
+           $$hNumberingHash{$position} = throne($residue);
        }
        close(HD);
    }
@@ -335,6 +335,46 @@ sub RunSNNS
    # Run the script.
    my $command = "$::batchman -q -f $scriptFile";
    `$command`;
+}
+
+
+#*************************************************************************
+# $aaOne = throne($aaThree)
+# -------------------------
+# Convert three letter code to one-letter code. Input can be one-letter
+# code already and mixed case.
+sub throne
+{
+    my($aa) = @_;
+
+    my %throneHash = (
+        'ALA' => 'A',
+        'CYS' => 'C',
+        'ASP' => 'D',
+        'GLU' => 'E',
+        'PHE' => 'F',
+        'GLY' => 'G',
+        'HIS' => 'H',
+        'ILE' => 'I',
+        'LYS' => 'K',
+        'LEU' => 'L',
+        'MET' => 'M',
+        'ASN' => 'N',
+        'PRO' => 'P',
+        'GLN' => 'Q',
+        'ARG' => 'R',
+        'SER' => 'S',
+        'THR' => 'T',
+        'VAL' => 'V',
+        'TRP' => 'W',
+        'TYR' => 'Y'
+        );
+
+
+    $aa = "\U$aa";
+    return($aa)              if(length($aa) == 1);
+    return($throneHash{$aa}) if(defined($throneHash{$aa}));
+    return('X');
 }
 
 
