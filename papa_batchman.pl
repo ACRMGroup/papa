@@ -84,6 +84,7 @@ sub RunPrediction
 {
     my($numberingFile) = @_;
 
+    my $trainedNetwork        = "$::papalib/final_trained.net";
     my $criticalPositionsFile = "$::papalib/new_best_positions.txt";
     my $aminoAcidsFile        = "$::papalib/residue_properties.mat";
     my $tempDir               = "/tmp/papa$$"; 
@@ -95,7 +96,9 @@ sub RunPrediction
     }
 
     # Files used by SNNS
+    my $scriptFile         = "$tempDir/predict.cmd";
     my $inputPatternsFile  = "$tempDir/input.pat";
+    my $outputPatternsFile = "$tempDir/output.pat";
 
     my @criticalPositions  = ();
     my %aminoAcidsEncoding = ();
@@ -118,12 +121,13 @@ sub RunPrediction
                              \%aminoAcidsEncoding);
 
     # Write a script file for SNNS to calculate the packing angle.
-    $packingAngle = RunSNNS("papanet/papanet", $inputPatternsFile);
+    RunSNNS($trainedNetwork, $inputPatternsFile,
+            $outputPatternsFile, $scriptFile);
 
     # Calculate the packing angle.
-    $packingAngle = ScalePackingAngle($packingAngle,
-                                      $::minimumInterfaceAngle,
-                                      $::maximumInterfaceAngle);
+    $packingAngle = ExtractPackingAngle($outputPatternsFile,
+                                        $::minimumInterfaceAngle,
+                                        $::maximumInterfaceAngle);
 
     # Adjust precision.
     $packingAngle = sprintf("%3.4f", $packingAngle);
@@ -302,7 +306,8 @@ sub WritePatternEncodingFile
 
 
 #*************************************************************************
-# RunSNNS($papanet, $inputPatternsFile)
+# RunSNNS($trainedNetworkFile, $inputPatternsFile,
+#         $outputPatternsFile, $scriptFile)
 # --------------------------------------------------------
 # Write a script file for SNNS to calculate the packing angle and run
 # SNNS
@@ -315,10 +320,28 @@ sub WritePatternEncodingFile
 # 4. Write the results of the prediction to the output patterns file.
 sub RunSNNS
 {
-    my ($papanet, $inputPatternsFile) = @_;
+   my ($trainedNetworkFile, $inputPatternsFile,
+       $outputPatternsFile, $scriptFile) = @_;
 
-    my $command = "$papanet $inputPatternsFile";
-    return(`$command`);
+   if(open(WHD, ">$scriptFile"))
+   {
+       print WHD "loadNet(\"$trainedNetworkFile\")\n";
+       print WHD "loadPattern(\"$inputPatternsFile\")\n";
+       print WHD "testNet()\n";
+       print WHD "saveResult(\"$outputPatternsFile\")";
+
+       # Close the output file handle.
+       close(WHD);
+   }
+   else
+   {
+       print STDERR "Unable to open SNNS script file for writing: $scriptFile\n";
+       exit 1;
+   }
+
+   # Run the script.
+   my $command = "$::batchman -q -f $scriptFile";
+   `$command`;
 }
 
 
@@ -363,21 +386,46 @@ sub throne
 
 
 #*************************************************************************
-# $packingAngle = &ScalePackingAngle($packingAngle,
-#                                    $minimumInterfaceAngle,
-#                                    $maximumInterfaceAngle)
+# $packingAngle = &ExtractPackingAngle($outputPatternsFile,
+#                                      $minimumInterfaceAngle,
+#                                      $maximumInterfaceAngle)
 # ------------------------------------------------------------
 # Extract the prediction results and calculate the packing angle.
 # Open the output patterns file (output of the neural network) in read mode.
-sub ScalePackingAngle
+sub ExtractPackingAngle
 {
 
-   my ($predictedInterfaceAngleFraction,
+   my ($outputPatternsFile,
        $minimumInterfaceAngle,
        $maximumInterfaceAngle) = @_;
 
+   my $lastNumbersLine = "";
    my $angleDifference = $maximumInterfaceAngle - $minimumInterfaceAngle;
 
+   if(open(HD, '<', $outputPatternsFile))
+   {
+       while(my $line = <HD>)
+       {
+           chomp($line);
+
+           # If the line starts with a number, store it so we end up with
+           # the last line.
+           if($line =~ /^[0-9]/)
+           {
+               $lastNumbersLine = $line;
+           }
+       }
+       close(HD);
+   }
+   else
+   {
+       die "Unable to read temporary prediction result file: $outputPatternsFile";
+   }
+
+   # Extract the last number from the last line containing numbers (i.e. $lastNumbersLine).
+   my @parts = split(/\s+/, $lastNumbersLine);
+   my $predictedInterfaceAngleFraction = $parts[$#parts];
+       
    # Convert the interface angle fraction into an actual angle calculated as:
    #
    #                           (InterfaceAngle - MinInterfaceAngle)
@@ -393,8 +441,3 @@ sub ScalePackingAngle
    # Return the predicted interface angle
    return $predictedInterfaceAngle;
 }
-
-
-
-
-
