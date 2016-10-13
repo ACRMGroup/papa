@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -s
 #*************************************************************************
 #
 #   Program:    papa
@@ -133,7 +133,7 @@ sub RunPrediction
     $packingAngle = sprintf("%3.4f", $packingAngle);
 
     # Clear all the temporary files created.
-    `\\rm -rf $tempDir`;
+    `\\rm -rf $tempDir` if(!defined($::debug));
 
     return($packingAngle);
 }
