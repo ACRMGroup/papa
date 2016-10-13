@@ -133,7 +133,14 @@ sub RunPrediction
     $packingAngle = sprintf("%3.4f", $packingAngle);
 
     # Clear all the temporary files created.
-    `\\rm -rf $tempDir` if(!defined($::debug));
+    if(defined($::debug))
+    {
+        print STDERR "Intermediary files are in $tempDir\n";
+    }
+    else
+    {
+        `\\rm -rf $tempDir`;
+    }
 
     return($packingAngle);
 }
