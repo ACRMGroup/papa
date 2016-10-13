@@ -1,3 +1,4 @@
+CC = gcc -O3 -Wall -pedantic
 OFILES = main.o papanet.o
 
 papanet : $(OFILES)
