@@ -12,7 +12,8 @@ Input is a numbered antibody sequence file in the form:
         L3 E
         ... etc ...
 
-Output is a line containing the packing angle.
+Output is a line containing the packing angle. If run with `-q`, the
+output is just the predicted packing angle with no text.
 
 ## Installation
 
@@ -26,7 +27,7 @@ Install the software by typing
 
         ./install.sh
 
-By default, it will be installed in $HOME/scripts - you can install
+By default, it will be installed in `$HOME/scripts` - you can install
 elsewhere by typing (for example)
 
         ./install.sh /usr/local/bin
