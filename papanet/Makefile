@@ -3,6 +3,7 @@ OFILES = main.o papanet.o
 
 papanet : $(OFILES)
 	$(CC) -o $@ $(OFILES) -lm
+	cp $@ ../papalib
 
 .c.o :
 	$(CC) -c -o $@ $<

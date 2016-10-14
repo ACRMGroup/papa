@@ -4,8 +4,8 @@
 #   Program:    papa
 #   File:       papa.pl
 #   
-#   Version:    V1.0
-#   Date:       07.10.16
+#   Version:    V1.1
+#   Date:       14.10.16
 #   Function:   Predict interface packing angle
 #   
 #   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2016
@@ -54,12 +54,12 @@
 #   =================
 #
 #   V1.0    07.10.16  Original   By: ACRM
+#   V1.1    14.10.16  Now uses custom C program rather than batchman
+#                     No need to install SNNS any more
 #
 #*************************************************************************
 #  Globals
 #  =======
-#$::batchman                      = "/usr/local/bin/batchman";
-$::batchman                      = "batchman";
 $::minimumInterfaceAngle         = 30.951270;
 $::maximumInterfaceAngle         = 60.754947;
 $::numberOfEncodingsPerAminoAcid = 4;
@@ -69,12 +69,25 @@ use strict;
 use FindBin;
 use Cwd qw(abs_path);
 $::papalib = abs_path("$FindBin::Bin/papalib");
+$::papanet = "$::papalib/papanet";
+
+if((scalar(@ARGV) != 1) || ($ARGV[0] eq "-h"))
+{
+    UsageDie();
+}
 
 my $numberingFile = shift(@ARGV);
 my $packingAngle  = RunPrediction($numberingFile);
 
 # Print the packing angle.
-print "Predicted packing angle: $packingAngle\n";
+if(defined($::q))
+{
+    print "$packingAngle\n";
+}
+else
+{
+    print "Predicted packing angle: $packingAngle\n";
+}
 
 
 #*************************************************************************
@@ -91,7 +104,7 @@ sub RunPrediction
     `mkdir $tempDir`;
     if(! -d $tempDir)
     {
-        die "Unable to create temporary directory $tempDir";
+        MyDie("Unable to create temporary directory $tempDir");
     }
 
     # Files used by SNNS
@@ -118,7 +131,7 @@ sub RunPrediction
                              \%aminoAcidsEncoding);
 
     # Write a script file for SNNS to calculate the packing angle.
-    $packingAngle = RunSNNS("papanet/papanet", $inputPatternsFile);
+    $packingAngle = RunSNNS($::papanet, $inputPatternsFile);
 
     # Calculate the packing angle.
     $packingAngle = ScalePackingAngle($packingAngle,
@@ -163,7 +176,8 @@ sub ReadCriticalPositions
    }
    else
    {
-       die "Unable to read critical residues file: $criticalPositionsFile";
+       MyDie("Unable to read critical residues file: " .
+             $criticalPositionsFile);
    }
 }
 
@@ -188,7 +202,8 @@ sub ReadAminoAcidEncoding
        {
            chomp($line);
 
-           # If the line does not start with a residue or a gap, skip to the next line.
+           # If the line does not start with a residue or a 
+           # gap, skip to the next line.
            next if($line !~ /^[A-Z|\-]/);
            
            # Split the line into the constituent fields.
@@ -197,7 +212,8 @@ sub ReadAminoAcidEncoding
            # E       5       4       -0.62   -1
            @parts    = split(/\t/, $line);
            $residue  = $parts[0];
-           $encoding = $parts[1].":".$parts[2].":".$parts[3].":".$parts[4];
+           $encoding = $parts[1].":".$parts[2].":".
+                       $parts[3].":".$parts[4];
            
            # Store the encoding for the amino acid
            $$hAminoAcidsEncoding{$residue} = $encoding;
@@ -207,7 +223,7 @@ sub ReadAminoAcidEncoding
    }
    else
    {
-       die "Unable to read amino acid encoding file: $aminoAcidsFile";
+       MyDie("Unable to read amino acid encoding file: $aminoAcidsFile");
    }
 }
 
@@ -230,8 +246,8 @@ sub ReadNumberingFile
        {
            chomp($line);
 
-           # If the line does not match the pattern of a line containing numbering,
-           # skip to the next line.
+           # If the line does not match the pattern of a line 
+           # containing numbering, skip to the next line.
            next if($line !~ /^[LH][0-9]/);
 
            # Split the line into position and residue.
@@ -244,8 +260,7 @@ sub ReadNumberingFile
    }
    else
    {
-       print STDERR "Unable to read numbering file: $numberingFile\n";
-       exit 1;
+       MyDie("Unable to read numbering file: $numberingFile");
    }
 }
 
@@ -296,7 +311,8 @@ sub WritePatternEncodingFile
    }
    else
    {
-       print STDERR "Unable to write temporary pattern file: $inputPatternsFile\n";
+       MyDie("Unable to write temporary pattern file: " .
+             $inputPatternsFile);
    }
 }
 
@@ -304,18 +320,16 @@ sub WritePatternEncodingFile
 #*************************************************************************
 # RunSNNS($papanet, $inputPatternsFile)
 # --------------------------------------------------------
-# Write a script file for SNNS to calculate the packing angle and run
-# SNNS
+# Runs the SNNS papanet standalone program
 #
-# The script performs the following steps:
-#
-# 1. Load the neural network. 
-# 2. Load the input patterns file.
-# 3. Test the network (i.e. do the prediction).
-# 4. Write the results of the prediction to the output patterns file.
 sub RunSNNS
 {
     my ($papanet, $inputPatternsFile) = @_;
+
+    if(!(-x $papanet))
+    {
+        MyDie("papanet executable not found: $papanet");
+    }
 
     my $command = "$papanet $inputPatternsFile";
     return(`$command`);
@@ -363,12 +377,11 @@ sub throne
 
 
 #*************************************************************************
-# $packingAngle = &ScalePackingAngle($packingAngle,
-#                                    $minimumInterfaceAngle,
-#                                    $maximumInterfaceAngle)
-# ------------------------------------------------------------
-# Extract the prediction results and calculate the packing angle.
-# Open the output patterns file (output of the neural network) in read mode.
+# $packingAngle = ScalePackingAngle($packingAngle,
+#                                   $minimumInterfaceAngle,
+#                                   $maximumInterfaceAngle)
+# ---------------------------------------------------------
+# Scale the packing angle
 sub ScalePackingAngle
 {
 
@@ -378,23 +391,60 @@ sub ScalePackingAngle
 
    my $angleDifference = $maximumInterfaceAngle - $minimumInterfaceAngle;
 
-   # Convert the interface angle fraction into an actual angle calculated as:
+   # Convert the interface angle fraction into an actual angle 
+   # calculated as:
    #
    #                           (InterfaceAngle - MinInterfaceAngle)
    # interfaceAngleFraction = ---------------------------------------
    #                          (MaxInterfaceAngle - MinInterfaceAngle)
    #
-   # It follows that the interface angle is calculated in the following way:
+   # It follows that the interface angle is calculated in the following 
+   # way:
    #
    # interfaceAngle = MinInterfaceAngle + 
-   #                  (InterfaceAngleFraction * (MaxInterfaceAngle - MinInterfaceAngle))
-   my $predictedInterfaceAngle = $minimumInterfaceAngle + ($predictedInterfaceAngleFraction * $angleDifference);
+   #                  (InterfaceAngleFraction * 
+   #                              (MaxInterfaceAngle - MinInterfaceAngle))
+   my $predictedInterfaceAngle = $minimumInterfaceAngle + 
+                                 ($predictedInterfaceAngleFraction * 
+                                  $angleDifference);
 
    # Return the predicted interface angle
    return $predictedInterfaceAngle;
 }
 
 
+#*************************************************************************
+sub MyDie
+{
+    my($message) = @_;
 
+    print STDERR "$message\n";
+    exit(1);
+}
+
+
+#*************************************************************************
+sub UsageDie
+{
+    print <<__EOF;
+
+papa V1.1 (c) UCL, Dr. Andrew C.R. Martin, 2016
+
+Usage: papa [-q] file.seq
+       -q Quiet - simply outputs the angle with no other text
+
+Uses Abhinandan Raghavan's trained neural network to predict the VH/VL
+packing angle. Input is a .seq file, i.e. a numbered file of the form
+
+   L1 D
+   L2 I
+   L3 Q
+   L4 M
+   ...
+
+Output is the predicted packing angle
+
+__EOF
+}
 
 
