@@ -1,15 +1,14 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 if [ "X$1" == "X" ]; then
-   scripts=$HOME/scripts
+   dest=$HOME/bin
 else
-   scripts=$1
+   dest=$1
 fi
 
-echo "Installing the software in $scripts"
+echo "Installing the software in $dest"
 
-mkdir -p $scripts
-cp -R papalib $scripts
-cp papa.pl    $scripts
-(cd $scripts; ln -sf papa.pl papa)
-
+mkdir -p $dest/share/papa
+cp -R share/papa/* $dest/share/papa
+cp papa.pl  $dest
+(cd $dest; ln -sf papa.pl papa)

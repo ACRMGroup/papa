@@ -68,7 +68,7 @@ use strict;
 # Find where the library files are
 use FindBin;
 use Cwd qw(abs_path);
-$::papalib = abs_path("$FindBin::Bin/papalib");
+$::papalib = abs_path("$FindBin::Bin/share/papa");
 $::papanet = "$::papalib/papanet";
 
 if((scalar(@ARGV) != 1) || ($ARGV[0] eq "-h"))

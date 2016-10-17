@@ -3,7 +3,7 @@ OFILES = main.o papanet.o
 
 papanet : $(OFILES)
 	$(CC) -o $@ $(OFILES) -lm
-	cp $@ ../papalib
+	cp $@ ../share/papa/
 
 .c.o :
 	$(CC) -c -o $@ $<
@@ -11,7 +11,7 @@ papanet : $(OFILES)
 main.c : papanet.o
 
 
-papanet.c : ../papalib/final_trained.net
+papanet.c : ../share/papa/final_trained.net
 	snns2c $< $@
 
 
