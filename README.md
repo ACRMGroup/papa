@@ -27,7 +27,7 @@ Install the software by typing
 
         ./install.sh
 
-By default, it will be installed in `$HOME/scripts` - you can install
+By default, it will be installed in `$HOME/bin` - you can install
 elsewhere by typing (for example)
 
         ./install.sh /usr/local/bin
