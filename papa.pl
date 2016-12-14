@@ -99,7 +99,7 @@ sub RunPrediction
 
     my $criticalPositionsFile = "$::papalib/new_best_positions.txt";
     my $aminoAcidsFile        = "$::papalib/residue_properties.mat";
-    my $tempDir               = "/tmp/papa$$"; 
+    my $tempDir               = "/tmp/papa$$" . time(); 
 
     `mkdir $tempDir`;
     if(! -d $tempDir)
