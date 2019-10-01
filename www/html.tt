@@ -1,0 +1,51 @@
+sub PrintHTMLHeader
+{
+    print <<__EOF;
+[% SET localcss = 1 %]
+[% INCLUDE '../../header.tt' %]
+[% INCLUDE '../../main_menu.tt' 
+   abs = " id='mcurrent'"
+%]
+[% INCLUDE '../abs_menu.tt' 
+   sequences = " id='current'"
+%]
+
+__EOF
+}
+
+sub PrintHTMLFooter
+{
+    print <<__EOF;
+</div>
+</div>
+
+[% INCLUDE '../../footer.tt' %]
+__EOF
+}
+
+sub ErrorMessage
+{
+    my($msg1, $msg2) = @_;
+
+    print <<__EOF;
+<h2>Error</h2>
+<h3>$msg1</h3>
+
+<p>$msg2</p>
+__EOF
+}
+
+sub ErrorPage
+{
+    my($msg1, $msg2) = @_;
+    PrintHTMLHeader();
+    print <<__EOF;
+<div id='main'>
+<h1>Sequence Analysis</h1>
+<div id='maincontent'>&nbsp;
+__EOF
+    ErrorMessage($msg1, $msg2);
+    PrintHTMLFooter();
+}
+
+1;

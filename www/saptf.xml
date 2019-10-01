@@ -1,0 +1,33 @@
+<saptf>
+
+<!-- This section is optional - replaces default text and colours -->
+<config onetool='1'>
+   <title>Antibodies</title>
+   <subtitle>Packing Angle Prediction Server (PAPS)</subtitle>
+   <resultssubtitle>Your analysis results...</resultssubtitle>
+   <toolstitle>Select analysis type</toolstitle>
+   <datatitle>Enter sequence data</datatitle>
+   <overlib caption='PAPS Help' width='300' fgcolor='#CCCCCC' bgcolor='#AAAAAA' closecolor='#3333FF' capcolor='#AA0000' />
+</config>
+
+<!-- Create 2 boxes for entering the sequence -->
+<seqbox id='seql'>
+<text>Light chain protein sequence:</text>
+</seqbox>
+<seqbox id='seqh'>
+<text>Heavy chain protein sequence:</text>
+</seqbox>
+
+
+<!-- Create a sequence analysis tool using normal mode -->
+<seqtool id='paps'>
+   <text>Given the sequence of light and heavy chains, the PAPS server
+   predicts the VH/VL packing angle.</text>
+   <input>seql</input>
+   <input>seqh</input>
+   <tool exe='/acrm/www/html/abs/paps/server/paps.pl'
+         slow='1'
+         param='seql seqh' />
+</seqtool>
+
+</saptf>

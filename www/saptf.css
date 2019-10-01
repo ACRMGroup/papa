@@ -1,0 +1,67 @@
+.buttonlist {
+   margin: 5px 0px;
+   border: solid black 1px;
+   background:  #AAAAAA;
+}
+.buttonlist ul {
+   margin: 5px 5px 5px 0px;
+   padding: 0px 0px 0px 30px;
+}
+.buttonlist li {
+   border: solid black 1px;
+   margin: 5px 10px 5px 0px;
+   padding: 5px;
+   background: #FFFFFF;
+}
+.buttonlist p {
+   border: solid black 1px;
+   margin: 5px 10px 5px 10px;
+   padding: 5px;
+   background: #FFFFFF;
+}
+
+.buttonlistparams {
+   padding: 0px 0px 0px 20px;
+}
+
+.seqinput {
+   margin: 5px 0px;
+   border: solid black 1px;
+   background:  #AAAAAA;
+   padding: 5px;
+}
+
+.seqinput p {
+   margin: 0px;
+}
+
+.seqinput textarea {
+   margin: 0px 0px 0px 25px;
+}
+
+.saptfimg {
+   border: none;
+}
+
+h1 { margin: 0em;
+     border: none;
+     background: #ffffff;
+     color: #a03030;
+     font: bold 26px Verdana, Helvetica, sans-serif;
+     padding: 0em;
+   }
+h2 { font: bold italic 24px Verdana, Helvetica, sans-serif;
+     padding: 4px 4px 4px 0px;
+     border-bottom: 2px solid #617485;
+     color: #617485;
+   }
+h3 { font: bold italic 20px Verdana, Helvetica, sans-serif; 
+     color: #a03030;
+   }
+h4 { font: bold italic 14px Verdana, Helvetica, sans-serif; 
+     color: #a03030;
+   }
+p, td, th, li, dt, dd { font: 14px Verdana, Helvetica, sans-serif;}
+th { font: bold 14px Verdana, Helvetica, sans-serif;}
+
+
