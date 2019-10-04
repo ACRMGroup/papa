@@ -25,8 +25,8 @@
    predicts the VH/VL packing angle.</text>
    <input>seql</input>
    <input>seqh</input>
-   <tool exe='/acrm/www/html/abs/paps/server/paps.pl'
-         slow='1'
+   <tool exe='./server/paps.pl'
+         slow='2'
          param='seql seqh' />
 </seqtool>
 
