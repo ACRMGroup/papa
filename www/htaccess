@@ -1,3 +1,0 @@
-options ExecCGI
-AddHandler cgi-script .cgi
-DirectoryIndex index.html index.php analyze.cgi
