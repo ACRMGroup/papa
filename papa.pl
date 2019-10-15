@@ -4,11 +4,11 @@
 #   Program:    papa
 #   File:       papa.pl
 #   
-#   Version:    V1.1
-#   Date:       14.10.16
+#   Version:    V1.2
+#   Date:       15.10.19
 #   Function:   Predict interface packing angle
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2016
+#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2016-2019
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
@@ -56,6 +56,7 @@
 #   V1.0    07.10.16  Original   By: ACRM
 #   V1.1    14.10.16  Now uses custom C program rather than batchman
 #                     No need to install SNNS any more
+#   V1.2    15.10.19  Correctly multiplies the angle by -1 !!!
 #
 #*************************************************************************
 #  Globals
@@ -78,6 +79,7 @@ if((scalar(@ARGV) != 1) || ($ARGV[0] eq "-h"))
 
 my $numberingFile = shift(@ARGV);
 my $packingAngle  = RunPrediction($numberingFile);
+$packingAngle     = -1.0 * $packingAngle;
 
 # Print the packing angle.
 if(defined($::q))
@@ -428,7 +430,7 @@ sub UsageDie
 {
     print <<__EOF;
 
-papa V1.1 (c) UCL, Dr. Andrew C.R. Martin, 2016
+papa V1.2 (c) UCL, Dr. Andrew C.R. Martin, 2016-2019
 
 Usage: papa [-q] file.seq
        -q Quiet - simply outputs the angle with no other text
