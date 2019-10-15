@@ -4,7 +4,7 @@
 #   Program:    papa
 #   File:       papa.pl
 #   
-#   Version:    V1.2
+#   Version:    V1.3
 #   Date:       15.10.19
 #   Function:   Predict interface packing angle
 #   
@@ -56,7 +56,8 @@
 #   V1.0    07.10.16  Original   By: ACRM
 #   V1.1    14.10.16  Now uses custom C program rather than batchman
 #                     No need to install SNNS any more
-#   V1.2    15.10.19  Correctly multiplies the angle by -1 !!!
+#   V1.2              Skipped
+#   V1.3    15.10.19  Correctly multiplies the angle by -1 !!!
 #
 #*************************************************************************
 #  Globals
@@ -430,7 +431,7 @@ sub UsageDie
 {
     print <<__EOF;
 
-papa V1.2 (c) UCL, Dr. Andrew C.R. Martin, 2016-2019
+papa V1.3 (c) UCL, Dr. Andrew C.R. Martin, 2016-2019
 
 Usage: papa [-q] file.seq
        -q Quiet - simply outputs the angle with no other text
