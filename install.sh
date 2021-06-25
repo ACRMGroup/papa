@@ -8,7 +8,7 @@ fi
 
 echo "Building the code..."
 touch src/papanet.*
-(cd src; make)
+(cd src; make clean; make)
 
 echo -n "Installing the software in $dest ..."
 mkdir -p $dest/share/papa
