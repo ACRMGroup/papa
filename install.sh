@@ -7,7 +7,8 @@ else
 fi
 
 echo "Building the code..."
-touch src/papanet.*
+#touch src/papanet.*
+touch src/*.net
 (cd src; make clean; make)
 
 echo -n "Installing the software in $dest ..."
