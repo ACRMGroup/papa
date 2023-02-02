@@ -62,8 +62,8 @@
 #*************************************************************************
 #  Globals
 #  =======
-$::minimumInterfaceAngle         = 30.951270;
-$::maximumInterfaceAngle         = 60.754947;
+$::minimumInterfaceAngle         = 30.539944;
+$::maximumInterfaceAngle         = 64.914869;
 $::numberOfEncodingsPerAminoAcid = 4;
 #*************************************************************************
 use strict;
@@ -334,8 +334,18 @@ sub RunSNNS
         MyDie("papanet executable not found: $papanet");
     }
 
+    # Escape white space in $papanet
+    $papanet =~ s/\s/\\ /g;
+    
     my $command = "$papanet $inputPatternsFile";
-    return(`$command`);
+    my $result = `$command`;
+    chomp $result;
+    if($result eq '')
+    {
+        print STDERR "Papa failed in command: $command\n";
+        exit 1;
+    }
+    return($result);
 }
 
 

@@ -14,7 +14,7 @@ setShuffle(TRUE)
 
 initNet()
 
-while SSE > 1.500000 and CYCLES < 10000 do
+while SSE > 1.500000 and CYCLES < 1000 do
    print(CYCLES, " ", SSE)
    trainNet()
 
