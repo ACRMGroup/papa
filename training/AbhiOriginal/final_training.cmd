@@ -14,8 +14,8 @@ setShuffle(TRUE)
 
 initNet()
 
-while SSE > 1.500000 and CYCLES < 10000 do
-   print(CYCLES, " ", SSE)
+while SSE > 1.500000 and CYCLES < 150 do
+
    trainNet()
 
 endwhile
@@ -24,5 +24,5 @@ saveNet("final_trained.net")
 
 print("Cycles trained: ",CYCLES)
 
-print("Training stopped at SSE error: ",SSE)
+print("Training stopped at error: ",SSE)
 
